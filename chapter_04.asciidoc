@@ -2,111 +2,15 @@
 What Are We Doing with All These Tests?
 ---------------------------------------
 
-
-
-Now that we've seen the basics of TDD in action, it's time to pause
-and talk about why we're doing it.
-
-((("test-driven development (TDD)", "justifications for", id="ix_TDDjustifications",range="startofrange")))
-I'm imagining several of you, dear readers, have been holding back
-some seething frustration--perhaps some of you have done a bit of unit
-testing before, and perhaps some of you are just in a hurry. You've been
-biting back questions like:
-
-* Aren't all these tests a bit excessive?
-
-* Surely some of them are redundant? There's duplication between
-  the functional tests and the unit tests.
-
-* I mean, what are you doing importing `django.core.urlresolvers` in your
-  unit tests?  Isn't that testing Django, ie, testing third-party code? I
-  thought that was a no-no?
-
-* Those unit tests seemed way too trivial--testing one line of declaration,
-  and a one-line function that returns a constant! Isn't that just a waste of
-  time? Shouldn't we save our tests for more complex things?
-
-* What about all those tiny changes during the unit-test/code cycle?  Surely we
-  could have just skipped to the end? I mean, `home_page = None`!? Really?
-
-* You're not telling me you 'actually' code like this in real life?
-
-Ah, young grasshopper. I too was once full of questions like these.  But only
-because they're perfectly good questions.  In fact, I still ask myself
-questions like these, all the time. Does all this stuff really have value? Is
-this a bit of a cargo cult?
-
-Programming Is like Pulling a Bucket of Water up from a Well
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-((("Beck, Kent")))
-Ultimately, programming is hard.  Often, we are smart, so we succeed.  TDD is
-there to help us out when we're not so smart.  Kent Beck (who basically
-invented TDD) uses the metaphor of lifting a bucket of water out of a well
-with a rope:  when the well isn't too deep, and the bucket isn't very full,
-it's easy. And even lifting a full bucket is pretty easy at first.  But after a
-while, you're going to get tired. TDD is like having a ratchet that lets you
-save your progress, take a break, and make sure you never slip backwards.  That
-way you don't have to be smart 'all' the time.
-
 [[figure4-1]]
 .Test ALL the things (original illustration source: http://bit.ly/1iXxdYp[Allie Brosh, Hyperbole and a Half])
 image::images/twdp_0401.png[Test ALL the things,float="right"]
 
+Topics to discuss:
 
-OK, perhaps 'in general', you're prepared to concede that TDD is a good
-idea, but maybe you still think I'm overdoing it?  Testing the tiniest thing,
-and taking ridiculously many small steps?
-
-TDD is a 'discipline', and that means it's not something that comes naturally;
-because many of the payoffs aren't immediate but only come in the longer term,
-you have to force yourself to do it in the moment. That's what the image of the
-Testing Goat is supposed to illustrate--you need to be a bit bloody-minded
-about it.
-
-.On the Merits of Trivial Tests for Trivial Functions
-**********************************************************************
-In the short term it may feel a bit silly to write tests for simple
-functions and constants.  
-((("test-driven development (TDD)", "trivial tests",id="ix_TDDtrivialities",range="startofrange")))
-It's perfectly possible to imagine still doing
-``mostly'' TDD, but following more relaxed rules where you don't unit test
-'absolutely' everything.  But in this book my aim is to demonstrate full,
-rigorous TDD. Like a kata in a martial art, the idea is to learn the motions
-in a controlled context, when there is no adversity, so that the techiques
-are part of your muscle memory. It seems trivial now, because we've started
-with a very simple example. The problem comes when your application gets
-complex--that's when you really need your tests.  And the danger is that
-complexity tends to sneak up on you, gradually.  You may not notice it
-happening, but quite soon you're a boiled frog.
-
-There are two other things to say in favour of tiny, simple tests for simple
-functions:
-
-Firstly, if they're really trivial tests, then they won't take you that long to
-write them. So stop moaning and just write them already.
-
-Secondly, it's always good to have a placeholder.  Having a test 'there' for a
-simple function means it's that much less of a psychological barrier to
-overcome when the simple function gets a tiny bit more complex--perhaps it
-grows an `if`. Then a few weeks later it grows a `for` loop. Before you know
-it, it's a recursive metaclass-based polymorphic tree parser factory.  But
-because it's had tests from the very beginning, adding a new test each time has
-felt quite natural, and it's well tested.  The alternative involves trying to
-decide when a function becomes ``complicated enough'' which is highly
-subjective, but worse, because there's no placeholder, it seems like that
-much more effort, and you're tempted each time to put it off a little longer,
-and pretty soon--frog soup!
-
-
-Instead of trying to figure out some hand-wavy subjective rules for when
-you should write tests, and when you can get away with not bothering, I suggest
-following the discipline for now--like any discipline, you have to take the
-time to learn the rules before you can break them.
-(((range="endofrange", startref="ix_TDDtrivialities")))
-(((range="endofrange", startref="ix_TDDjustifications")))
-
-**********************************************************************
+* "Bucket from a well" metaphor
+* TDD as a discipline -- kata
+* the value of ridiculously small/simple tests?
 
 Now, back to our onions.
 
@@ -114,8 +18,6 @@ Now, back to our onions.
 Using Selenium to Test User Interactions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-((("user interaction testing", id="ix_uitesting", range="startofrange")))
-((("Selenium", "for user interaction testing", sortas="userinteraction", id="ix_Selenium_for_ui_testing",range="startofrange")))
 Where were we at the end of the last chapter? Let's rerun the test and find
 out:
 
@@ -143,10 +45,6 @@ Did you try it, and get an error saying 'Problem loading page' or
 'Unable to connect'?  So did I. It's because we forgot to spin up the dev
 server first using `manage.py runserver`.  Do that, and you'll get the failure
 message we're after.
-
-NOTE: One of the great things about TDD is that you never have to worry about
-forgetting what to do next--just rerun your tests and they will tell
-you what you need to work on.
 
 ``Finish the test'', it says, so let's do just that!  Open up
 'functional_tests.py' and we'll extend our FT:
@@ -209,33 +107,17 @@ class NewVisitorTest(unittest.TestCase):
         [...]
 ----
 
-//IDEA: stop using id_new_item, just use name=
-
-We're using several of the methods that Selenium provides to examine web
-pages: `find_element_by_tag_name`, `find_element_by_id`, and
-`find_element`**`s`**`_by_tag_name` (notice the extra `s`, which means it will
-return several elements rather than just one).  We also use `send_keys`,
-which is Selenium's way of typing into input elements. You'll also see the
-`Keys` class (don't forget to import it), which lets us send special keys
-like Enter, but also modifiers like Ctrl.
+Ask about:
+* `find_element_by_tag_name`, `find_element_by_id`, 
+* `find_element`**`s`**`_by_tag_name` (notice the extra `s`)
+* `send_keys`,
+* `Keys` class 
+* `any` function + generator expressions
 
 TIP: Watch out for the difference between the Selenium `find_element_by...`
 and `find_elements_by...` functions.  One returns an element, and raises
 an exception if it can't find it, whereas the other returns a list, which
 may be empty.
-
-
-((("any function")))
-Also, just look at that `any` function. It's a little-known Python built-in.
-I don't even need to explain it, do I? Python is such a joy.
-
-((("generator expression")))
-((("list comprehension")))
-Although, if you're one of my readers who doesn't know Python, what's happening
-inside the `any` is a 'generator expression', which is like a 'list
-comprehension' but awesomer. You need to read up on this. If you Google it,
-you'll find http://bit.ly/1iXxD18[Guido himself explaining it nicely].
-Come back and tell me that's not pure joy!
 
 Let's see how it gets on:
 
@@ -249,13 +131,8 @@ Stacktrace:
 [...]
 ----
 
-Decoding that, the test is saying it can't find an `<h1>` element on the page.
-Let's see what we can do to add that to the HTML of our home page.
-
 Big changes to a functional test are usually a good thing to commit on their
-own. I failed to do so in my first draft, and I regretted it later when I
-changed my mind and had the change mixed up with a bunch of others.  The more
-atomic your commits, the better:
+own 
 
 [subs="specialcharacters,quotes"]
 ----
@@ -265,14 +142,9 @@ $ *git commit -am "Functional test now checks we can input a to-do item"*
 
 
 
+
 The ``Don't Test Constants'' Rule, and Templates to the Rescue
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-((("Don't Test Constants rule")))
-Let's take a look at our unit tests, 'lists/tests.py'.  Currently we're looking
-for specific HTML strings, but that's not a particularly efficient way of
-testing HTML.  In general, one of the rules of unit testing is 'Don't test
-constants', and testing HTML as text is a lot like testing a constant.
 
 In other words, if you have some code that says:
 
@@ -290,37 +162,14 @@ from myprogram import wibble
 assert wibble == 3
 ----
 
-Unit tests are really about testing logic, flow control, and configuration.
-Making assertions about exactly what sequence of characters we have in our HTML
-strings isn't doing that.
-
-What's more, mangling raw strings in Python really isn't a great way of dealing
-with HTML.  There's a much better solution, which is to use templates.  Quite
-apart from anything else, if we can keep HTML to one side in a file whose name
-ends in '.html', we'll get better syntax highlighting! There are lots of Python
-templating frameworks out there, and Django has its own which works very well.
-Let's use that.
-(((range="endofrange", startref="ix_Selenium_for_ui_testing")))
-(((range="endofrange", startref="ix_uitesting")))
-
 
 Refactoring to Use a Template
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-((("templates")))
-((("refactoring", id="ix_refactoring", range="startofrange")))
-What we want to do now is make our view function return exactly the same HTML,
-but just using a different process. That's a refactor--when we try to
-improve the code 'without changing its functionality'.
+Objective: **refactor** view to return same HTML
 
-That last bit is really important. If you try and add new functionality at the
-same time as refactoring, you're much more likely to run into trouble.
-Refactoring is actually a whole discipline in itself, and it even has a
-reference book: Martin Fowler's http://refactoring.com/[Refactoring].
+Start with test run:
 
-The first rule is that you can't refactor without tests.  Thankfully, we're doing
-TDD, so we're way ahead of the game.  Let's check our tests pass; they will
-be what makes sure that our refactoring is behaviour preserving:
 
 [subs="specialcharacters,quotes"]
 ----
@@ -329,14 +178,6 @@ $ *python3 manage.py test*
 OK
 ----
 
-Great! We'll start by taking our HTML string and putting it into its own file.
-Create a directory called 'lists/templates' to keep templates in, and then open
-a file at 'lists/templates/home.html', to which we'll transfer our 
-HTML:footnote:[Some people like to use another subfolder named after the app
-(ie, 'lists/templates/lists') and then refer to the template as
-'lists/home.html'.  This is called "template namespacing". I figured it was
-overcomplicated for this small project, but it may be worth it on larger
-projects.  There's more in the http://bit.ly/1iXxWZL[Django tutorial].]
 
 [role="sourcecode"]
 .lists/templates/home.html
@@ -350,6 +191,7 @@ projects.  There's more in the http://bit.ly/1iXxWZL[Django tutorial].]
 
 Mmmh, syntax-highlighted ... much nicer! Now to change our view function:
 
+
 [role="sourcecode"]
 .lists/views.py
 [source,python]
@@ -360,18 +202,6 @@ def home_page(request):
     return render(request, 'home.html')
 ----
 
-Instead of building our own +HttpResponse+, we now use the Django +render+
-function.  It takes the request as its first parameter (for reasons we'll go
-into later) and the name of the template to render.  Django will automatically
-search folders called 'templates' inside any of your apps' directories.  Then
-it builds an `HttpResponse` for you, based on the content of the template.
-
-
-NOTE: Templates are a very powerful feature of Django's, and their main
-strength consists of substituting Python variables into HTML text. We're
-not using this feature yet, but we will in future chapters.  That's
-why we use `render` and (later) `render_to_` `string` rather than, say, manually
-reading the file from disk with the built-in `open`.
 
 Let's see if it works:
 
@@ -423,12 +253,8 @@ Another chance to analyse a traceback:
 So why can't Django find the template?  It's right where it's supposed to be,
 in the 'lists/templates' folder.
 
-The thing is that we haven't yet 'officially' registered our lists app with
-Django. Unfortunately, just running the `startapp` command and
-having what is obviously an app in your project folder isn't quite enough.  You
-have to tell Django that you 'really' mean it, and add it to 'settings.py' as
-well. Belt and braces. Open it up and look for a variable called
-`INSTALLED_APPS`, to which we'll add `lists`:
+
+* Need to add lists app to 'settings.py':
 
 
 [role="sourcecode"]
@@ -449,11 +275,8 @@ INSTALLED_APPS = (
 ----
 
 
-You can see there's lots of apps already in there by default.  We just need to
-add ours, `lists`, to the bottom of the list.  Don't forget the trailing comma--it may not be required, but one day you'll be really annoyed when you forget
-it and Python concatenates two strings on different lines...
+Does that do the trick?
 
-Now we can try running the tests again:
 
 [subs="specialcharacters,macros"]
 ----
@@ -463,20 +286,12 @@ $ pass:quotes[*python3 manage.py test*]
 AssertionError: False is not true
 ----
 
-
 Darn, not quite.
 
 NOTE: Depending on whether your text editor insists on adding newlines to the
       end of files, you may not even see this error.  If so, you can safely
       ignore the next bit, and skip straight to where you can see the listing
       says OK.
-
-
-But it did get further!  It seems it's managed to find our template, but
-the last of the three assertions is failing. Apparently there's something wrong
-at the end of the output. I had to do a little +print(repr(response.content))+
-to debug this, but it turns out that the switch to templates has introduced an
-additional newline (`\n`) at the end. We can get them to pass like this:
 
 
 [role="sourcecode"]
@@ -486,8 +301,7 @@ additional newline (`\n`) at the end. We can get them to pass like this:
 self.assertTrue(response.content.strip().endswith(b'</html>'))
 ----
 
-It's a tiny bit of a cheat, but whitespace at the end of an HTML file really
-shouldn't matter to us. Let's try running the tests again:
+hooray!
 
 [subs="specialcharacters,quotes"]
 ----
@@ -496,11 +310,7 @@ $ *python3 manage.py test*
 OK
 ----
 
-Our refactor of the code is now complete, and the tests mean we're happy that
-behaviour is preserved. Now we can change the tests so that they're no longer
-testing constants; instead, they should just check that we're rendering the
-right template.  Another Django helper function called `render_to_string` is
-our friend here:
+Now we can change the tests so that they're no longer testing constants
 
 [role="sourcecode"]
 .lists/tests.py
@@ -516,55 +326,35 @@ from django.template.loader import render_to_string
         self.assertEqual(response.content.decode(), expected_html)
 ----
 
-We use `.decode()` to convert the `response.content` bytes into a Python
-unicode string, which allows us to compare strings with strings, instead
-of bytes with bytes as we did earlier.
+* ask about .decode() if we haven't spoken about Python 3 and strings vs bytes
 
-The main point, though, is that instead of testing constants we're testing our
-implementation. Great!
 
-NOTE: Django has a test client with tools for testing templates, which we'll
-use in later chapters. For now we'll use the low-level tools to make sure
-we're comfortable with how everything works. No magic!
+.Advanced Exercise:
+********************************************************************
 
-On Refactoring
+Look up the Django Test Client.  How would you use it to check that our view
+is using the correct template?
+
+********************************************************************
+
+
+On refactoring
 ~~~~~~~~~~~~~~
 
-((("Beck, Kent")))
-That was an absolutely trivial example of refactoring. But, as Kent Beck puts
-it in <<tddbe,'Test-Driven Development: By Example'>>, "Am I recommending that
-you actually work this way? No. I'm recommending that you be 'able' to work
-this way."
-
-In fact, as I was writing this my first instinct was to dive in and change the
-test first--make it use the `render_to_string` function straight away,
-delete the three superfluous assertions, leaving just a check of the contents
-against the expected render, and then go ahead and make the code change.  But
-notice how that actually would have left space for me to break things: I could
-have defined the template as containing 'any' arbitrary string, instead of
-the string with the right `<html>` and `<title>` tags.  
+[quote, Kent Beck, TDD by example]
+____________________________________________________________________________
+Am I recommending that you actually work this way? No. I'm recommending that
+you be 'able' to work this way.
+____________________________________________________________________________
 
 TIP: When refactoring, work on either the code or the tests, but not both at
      once.
-
-((("Refactoring Cat")))
-There's always a tendency to skip ahead a couple of steps, to make a couple of
-tweaks to the behaviour while you're refactoring, but pretty soon you've got
-changes to half a dozen different files, you've totally lost track of where you
-are, and nothing works any more.  If you don't want to end up like
-http://bit.ly/1iXyRt4[Refactoring Cat] (<<RefactoringCat>>), stick to small
-steps; keep refactoring and functionality changes entirely separate.
 
 [[RefactoringCat]]
 .Refactoring Cat--be sure to look up the full animated GIF (source: 4GIFs.com)
 image::images/twdp_0402.png[An adventurous cat, trying to refactor its way out of a slippery bathtub]
 
 
-NOTE: We'll come across ``Refactoring Cat'' again during this book,
-as an example of what happens when we get carried away and want to change
-too many things at once. Think of it as the little cartoon demon counterpart
-to the Testing Goat, popping up over your other shoulder and giving you bad
-advice...
 
 It's a good idea to do a commit after any refactoring:
 
@@ -576,15 +366,13 @@ $ *git diff --staged* # review the changes we're about to commit
 $ *git commit -m "Refactor home page view to use a template"*
 ----
 
-(((range="endofrange", startref="ix_refactoring")))
+
 
 A Little More of Our Front Page
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 In the meantime, our functional test is still failing.  Let's now make an
-actual code change to get it passing.  Because our HTML is now in a template,
-we can feel free to make changes to it, without needing to write any extra unit
-tests.  We wanted an `<h1>`:
+actual code change to get it passing.  
 
 [role="sourcecode"]
 .lists/templates/home.html
@@ -665,12 +453,7 @@ test_can_start_a_list_and_retrieve_it_later
 AssertionError: False is not true
 ----
 
-((("assertTrue")))
-((("any function")))
-Slightly cryptic. We can use the line number to track it down, and it turns out
-it's that `any` function I was so smug about earlier--or, more precisely, the
-`assertTrue`, which doesn't have a very explicit failure message.  We can pass
-a custom error message as an argument to most `assertX` methods in `unittest`:
+That `any` function!
 
 
 [role="sourcecode"]
@@ -689,7 +472,6 @@ If you run the FT again, you should see our message:
 AssertionError: False is not true : New to-do item did not appear in table
 ----
 
-((("AssertionError")))
 But now, to get this to pass, we will need to actually process the user's
 form submission.  And that's a topic for the next chapter.
 
@@ -706,11 +488,18 @@ Thanks to a bit of refactoring, we've got our view set up to render a template,
 we've stopped testing constants, and we're now well placed to start processing
 user input.
 
+.Advanced Exercise:
+********************************************************************
+
+How could we improve that check-that-the-new-item-has-appeared-in-the-table
+assertion further?   
+
+********************************************************************
+
 
 Recap: The TDD Process
 ~~~~~~~~~~~~~~~~~~~~~~
 
-((("test-driven development (TDD)", "process recap", id="ix_TDDrecap",range="startofrange")))
 We've now seen all the main aspects of the TDD process, in practice:
 
 * Functional tests
@@ -718,55 +507,20 @@ We've now seen all the main aspects of the TDD process, in practice:
 * The unit-test/code cycle
 * Refactoring
 
-It's time for a little recap, and perhaps even some flowcharts.  Forgive me,
-years misspent as a management consultant have ruined me. On the plus side,
-it will feature recursion.
-
 What is the overall TDD process? See <<simple-TDD-diagram>>.
+
+
 
 [[simple-TDD-diagram]]
 .Overall TDD process
 image::images/twdp_0403.png[A flowchart showing tests, coding and refactoring]
 
 
-We write a test. We run the test and see it fail.  We write some minimal code
-to get it a little further.  We rerun the test and repeat until it passes.
-Then, optionally, we might refactor our code, using our tests to make sure we
-don't break anything.
-
-((("double-loop TDD")))
-((("test-driven development (TDD)", "double-loop")))
-But how does this apply when we have functional tests 'and' unit tests?  Well,
-you can think of the functional test as being a high-level view of the cycle,
-where "writing the code" to get the functional tests to pass actually involves
-using another, smaller TDD cycle which uses unit tests. See
-<<Double-Loop-TDD-diagram>>.
-
 [[Double-Loop-TDD-diagram]]
 .The TDD process with functional and unit tests
 image::images/twdp_0404.png[A flowchart showing functional tests as the overall cycle, and unit tests helping to code]
 
 
-We write a functional test and see it fail.  Then, the process of "writing
-code" to get it to pass is a mini-TDD cycle of its own:  we write one or more
-unit tests, and go into the unit-test/code cycle until the unit tests pass.
-Then, we go back to our FT to check that it gets a little further, and we
-can write a bit more of our application--using more unit tests, and so on.
-
-What about refactoring, in the context of functional tests?  Well, that means
-we use the functional test to check that we've preserved the behaviour of
-our application, but we can change or add and remove unit tests, and use
-a unit test cycle to actually change the implementation.
-
-The functional tests are the ultimate judge of whether your application works
-or not.  The unit tests are a tool to help you along the way.
-
-This way of looking at things is sometimes called "Double-Loop TDD". One of my
-eminent tech reviewers, Emily Bache, wrote http://bit.ly/1iXzoLR[a blog post]
-on the topic, which I recommend for a different perspective.
-
-We'll explore all of the different parts of this workflow in more detail
-over the coming chapters.
 
 .How to "Check" Your Code, or Skip Ahead (If You Must)
 *******************************************************************************
@@ -813,33 +567,12 @@ already pushing your code up to GitHub or Bitbucket.
 Be aware that the precise order of, say, methods in a class may differ
 between your version and mine.  It may make diffs hard to read.
 
-++++
-<?hard-pagebreak?>
-++++
-
 
 **Downloading a ZIP file for a chapter**
-
-(((range="endofrange", startref="ix_TDDrecap")))
-If, for whatever reason, you want to "start from scratch" for a chapter, or
-skip 
-ahead,footnote:[I don't recommend skipping ahead. I haven't designed the chapters
-to stand on their own; each relies on the previous ones, so it may be more
-confusing than anything else...]
-and/or you're just not comfortable with Git, you can download a version of my
-code as a ZIP file, from URLs following this pattern:
 
 https://github.com/hjwp/book-example/archive/chapter_05.zip
 
 https://github.com/hjwp/book-example/archive/chapter_06.zip
-
-
-**Don't let it become a crutch!**
-
-Try not to sneak a peak at the answers unless you're really, really stuck.
-Like I said at the beginning of the last chapter, there's a lot of value in
-debugging errors all by yourself, and in real life, there's no "harrys repo" to
-check against and find all the answers.
 
 *******************************************************************************
 
