@@ -25,6 +25,10 @@ To make sure we're using the Python3 version of pip, I'll always use `pip3`
 as the executable in my command-line examples.  Depending on your platform, it 
 may be `pip-3.3` or `pip-3.4`.
 
+NOTE: If you're stuck on Django 1.7 for whatever reason, you'll be able to 
+    follow along just fine -- the differences as pertains to this tutorial
+    are negligible.
+
 
 .Windows Notes
 *******************************************************************************
